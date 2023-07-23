@@ -5,11 +5,11 @@ from .types import Book
 # from .query import books_all
 from typing import List, Optional, Union
 
-from .querys import BookQuery 
+from .querys import BookQuery,BookRealyQuery,AuthorRealyQuery
 from .mutation import BookMutation
 
 @strawberry.type
-class Query(BookQuery):
+class Query(BookRealyQuery,AuthorRealyQuery):
     pass
 
 @strawberry.type

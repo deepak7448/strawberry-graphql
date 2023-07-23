@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'strawberry_django',
     "debug_toolbar",
     'guardian',
+    'django_filters',
 ]
 
 INTERNAL_IPS = [
@@ -141,7 +142,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STRAWBERRY_DJANGO = {
     "FIELD_DESCRIPTION_FROM_HELP_TEXT": True,
     "TYPE_DESCRIPTION_FROM_MODEL_DOCSTRING": True,
-    "MUTATIONS_DEFAULT_HANDLE_ERRORS":True
+    "MUTATIONS_DEFAULT_HANDLE_ERRORS":True,
+    "MAP_AUTO_ID_AS_GLOBAL_ID":True
 }
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend', # this is default

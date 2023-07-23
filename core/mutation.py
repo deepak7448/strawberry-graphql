@@ -48,9 +48,12 @@ class BookMutation:
     @strawberry_django.mutation(name="Add_Books",description="Add book for author",handle_django_errors=True)
     def create_book(self, info, bookinput: BookInput) -> Union[SuccessMessage]:
         try:
-            # print(dir(info.context.request.upload_handlers))
-            # files=bookinput.cover.read().decode("utf-8")
-            # print(files)
+            if bookinput.time==strawberry.UNSET or time==None or time=="":
+                bookinput.time=None
+            if bookinput.date==strawberry.UNSET or date==None or date=="":
+                bookinput.date=None
+            if bookinput.book_json==strawberry.UNSET :
+                bookinput.book_json=None
             aut=Author.objects.get(pk=bookinput.author).id
             book = Book.objects.create(author_id=aut,title=bookinput.title,description=bookinput.description,
                                        cover=bookinput.cover,price=bookinput.price,book_json=bookinput.book_json,

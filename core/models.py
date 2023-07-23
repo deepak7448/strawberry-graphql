@@ -5,6 +5,7 @@ from django.utils.text import slugify
 
 class Author(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='author')
+    name=models.CharField(max_length=100,null=True,blank=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/',null=True,blank=True)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
