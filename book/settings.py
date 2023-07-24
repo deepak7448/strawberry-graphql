@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
+from datetime import timedelta,datetime
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -41,8 +42,12 @@ INSTALLED_APPS = [
     "strawberry.django",
     'strawberry_django',
     "debug_toolbar",
-    'guardian',
-    'django_filters',
+    # 'guardian',
+    # 'django_filters',
+    'strawberry_django_jwt.refresh_token',
+    # "strawberry_jwt_auth",
+    # 'graphql_jwt',
+    # 'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
 ]
 
 INTERNAL_IPS = [
@@ -59,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # "graphql_jwt.middleware.JSONWebTokenMiddleware",
     # "debug_toolbar.middleware.DebugToolbarMiddleware",
     "strawberry_django.middlewares.debug_toolbar.DebugToolbarMiddleware",
 ]
@@ -145,7 +151,12 @@ STRAWBERRY_DJANGO = {
     "MUTATIONS_DEFAULT_HANDLE_ERRORS":True,
     "MAP_AUTO_ID_AS_GLOBAL_ID":True
 }
-AUTHENTICATION_BACKENDS = (
+AUTHENTICATION_BACKENDS = [
+    'strawberry_django_jwt.backends.JSONWebTokenBackend',
     'django.contrib.auth.backends.ModelBackend', # this is default
-    'guardian.backends.ObjectPermissionBackend',
-)
+]
+GRAPHQL_JWT = {
+    "JWT_VERIFY_EXPIRATION": True,
+    "JWT_EXPIRATION_DELTA": timedelta(days=7),
+    "JWT_REFRESH_EXPIRATION_DELTA":timedelta(days=10)
+}

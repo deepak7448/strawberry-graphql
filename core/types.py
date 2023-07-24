@@ -10,13 +10,20 @@ import datetime
 # from django.contrib.auth.models import User
 
 @strawberry.django.type(User,exclude=['password'])
-class User(relay.Node):
+class UserType(relay.Node):
     id: relay.NodeID[int]
+    profile: 'ProfileType'
     @strawberry.field
     def full_name(self) -> str:
         return f"{self.first_name} {self.last_name}"
-    
-    
+
+@strawberry.django.type(Profile,fields="__all__")
+
+class ProfileType(relay.Node):
+    id: relay.NodeID[int]
+    date_of_birth: auto
+    address: auto
+    user:UserType
 
 @strawberry.django.filter(Author, lookups=True)
 class AuthorFilter:
@@ -32,7 +39,7 @@ class AuthorOrder:
 @strawberry.django.type(Author,fields="__all__",filters=AuthorFilter,order=AuthorOrder)
 class Authors(relay.Node):
     id: relay.NodeID[int]
-    user: User
+    user: UserType
     book: List['Books']
     profile_picture: str
 
@@ -51,13 +58,8 @@ class BookFilter:
     title: auto
     date: Optional[datetime.date ]=strawberry.UNSET
 
-# @strawberry.django.type(Book,description="A book object query",fields="__all__",filters=BookFilter)
-@strawberry.django.type(Book, fields="__all__")
-class Books:
-    # id: relay.NodeID[int]
+@strawberry.django.type(Book,description="A book object query",fields="__all__",filters=BookFilter)
+class Books(relay.Node):
+    id: relay.NodeID[int]
     author: Authors
     cover: str
-
-    # @strawberry.field()
-    # def cover(self,info) -> str:
-    #     u

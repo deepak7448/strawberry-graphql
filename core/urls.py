@@ -1,4 +1,5 @@
 from strawberry.django.views import GraphQLView
+# from strawberry_jwt_auth.views import strawberry_auth_view
 # from .schema import schema
 # from django.urls import path
 # urlpatterns = [
