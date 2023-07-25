@@ -1,7 +1,19 @@
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.utils import timezone
+import base64
 
+
+
+
+def deocodeGlobalId(encoded_string):
+    # encoded_string = id
+    decoded_bytes = base64.b64decode(str(encoded_string))
+    decoded_string = decoded_bytes.decode('utf-8')
+    decode=decoded_string.split(':')[1]
+    return decode
+
+    # print(decoded_string.split(':')[1])
 
 def login(obj,username,password):
     # error=[]

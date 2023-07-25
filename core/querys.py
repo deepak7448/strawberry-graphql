@@ -4,10 +4,10 @@ from .types import *
 from typing import List, Optional, Union,Dict
 from graphql import GraphQLError
 from strawberry import relay
-
 import strawberry_django
-
-
+from strawberry_django_jwt.decorators import login_required
+# from graphql_relay import to_global_id, from_global_id
+from .utils import deocodeGlobalId
 
 
 
@@ -41,12 +41,19 @@ class BookQuery:
     # fruits: list[Books] = strawberry.django.field()
     # authors: list[Authors] = strawberry.django.field()
 
-
 @strawberry.type
 class BookRealyQuery:
-    book: relay.Node = relay.node()
+    book: Books = relay.node()
+
+    @strawberry.django.field()
+    @login_required
+    def book(self,info,id:relay.GlobalID)->List[Books]:
+        id=deocodeGlobalId(id)
+        return Book.objects.get(pk=id)
+
     # books: relay.ConnectionField[Books] = relay.connection_field(Books)
     @strawberry.django.connection(relay.ListConnection[Books])
+    @login_required
     def book_relay(self,info,)->List[Books]:
         book=Book.objects.all()
         # if filters is not strawberry.UNSET:
@@ -57,10 +64,14 @@ class BookRealyQuery:
 # class AuthorFilter:
 #     name:auto
 #     user:auto
-
+# @login_required
 @strawberry.type
 class AuthorRealyQuery:
-    author: relay.Node = relay.node()
+    author: Authors = relay.node()
+    @strawberry.django.field()
+    def resolve_author(self,info,id:relay.NodeID[int])->List[Authors]:
+        return Author.objects.get(pk=id)
+
 
     @strawberry.django.connection(relay.ListConnection[Authors])
     def author_relay(self,info,

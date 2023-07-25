@@ -21,9 +21,9 @@ class Author(models.Model):
 class Book(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE,related_name='book')
     book_json=models.JSONField(null=True,blank=True)
-    title = models.CharField(max_length=100)
-    slug=models.SlugField(max_length=100)
-    description = models.TextField()
+    title = models.CharField(max_length=100,null=True,blank=True)
+    slug=models.SlugField(max_length=100,null=True,blank=True)
+    description = models.TextField(null=True,blank=True)
     time=models.TimeField(null=True,blank=True)
     date=models.DateField(null=True,blank=True)
     cover = models.ImageField(upload_to='covers/',null=True,blank=True)
@@ -55,3 +55,15 @@ class Profile(models.Model):
 
     class Meta:
         verbose_name_plural = "Profiles"
+
+
+class Image(models.Model):
+    image=models.ImageField(upload_to='images/',null=True,blank=True)
+    created_at=models.DateTimeField(auto_now_add=True)
+    updated_at=models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.image.url
+    
+    class Meta:
+        verbose_name_plural = "Images"

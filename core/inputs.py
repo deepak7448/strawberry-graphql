@@ -7,6 +7,7 @@ from strawberry.file_uploads import Upload
 from django.contrib.auth.models import User
 import datetime
 from typing import NewType
+
 # from graphene_file_upload.scalars import Upload
 # from strawberry.types import GenericScalar
 
@@ -15,10 +16,10 @@ class BookInput:
     # id: auto
     author:strawberry.ID
     title: Optional[str]=strawberry.UNSET
-    description: auto
+    description: Optional[str]=strawberry.UNSET
     book_json:auto
     cover: Upload
-    price: auto 
+    price: Optional[int]=strawberry.UNSET 
     time:auto
     date:auto
 # class FruitInput:

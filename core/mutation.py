@@ -60,15 +60,18 @@ class BookMutation:
     def create_book(self, info, bookinput: BookInput) -> Union[SuccessMessage,ErrorMessage]:
         try:
             errors=[]
+            file=info.context.request.FILES
+            for i in file.values():
+                print(i)
             if bookinput.time==strawberry.UNSET or time==None or time=="":
                 bookinput.time=None
             if bookinput.date==strawberry.UNSET or date==None or date=="":
                 bookinput.date=None
-            if bookinput.book_json==strawberry.UNSET :
+            if bookinput.book_json==strawberry.UNSET or bookinput.book_json=="" or bookinput.book_json==None:
                 bookinput.book_json=None
             aut=Author.objects.get(pk=bookinput.author).id
             book = Book.objects.create(author_id=aut,title=bookinput.title,description=bookinput.description,
-                                       cover=bookinput.cover,price=bookinput.price,book_json=bookinput.book_json,
+                                       price=bookinput.price,book_json=bookinput.book_json,cover=i,
                                        time=bookinput.time,date=bookinput.date)
             return SuccessMessage(message="created",objects=book)
         except Author.DoesNotExist:

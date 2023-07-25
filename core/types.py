@@ -63,3 +63,7 @@ class Books(relay.Node):
     id: relay.NodeID[int]
     author: Authors
     cover: str
+
+    # @strawberry.field(relay.Node[Book])
+    # def node(self) -> Book:
+    #     return self
