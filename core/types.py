@@ -67,3 +67,8 @@ class Books(relay.Node):
     # @strawberry.field(relay.Node[Book])
     # def node(self) -> Book:
     #     return self
+
+@strawberry.django.type(Image,description="A image object query",fields="__all__")
+class ImageType(relay.Node):
+    id:relay.NodeID[int]
+    image:str

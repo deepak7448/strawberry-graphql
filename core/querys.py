@@ -6,7 +6,7 @@ from graphql import GraphQLError
 from strawberry import relay
 import strawberry_django
 from strawberry_django_jwt.decorators import login_required
-# from graphql_relay import to_global_id, from_global_id
+from graphql_relay import to_global_id, from_global_id
 from .utils import deocodeGlobalId
 
 
@@ -14,7 +14,7 @@ from .utils import deocodeGlobalId
 @strawberry.type
 class BookQuery:
     @strawberry.field()
-    def books_id(self, id: int,) -> List[Books]:
+    def books_id(self, id:strawberry.ID,) -> List[Books]:
         try:
             book = Book.objects.get(pk=id)
             return [book]
@@ -47,8 +47,9 @@ class BookRealyQuery:
 
     @strawberry.django.field()
     @login_required
-    def book(self,info,id:relay.GlobalID)->List[Books]:
-        id=deocodeGlobalId(id)
+    def book(self,info,id:strawberry.ID)->List[Books]:
+        id=from_global_id(id).id
+        # id=deocodeGlobalId(id)
         return Book.objects.get(pk=id)
 
     # books: relay.ConnectionField[Books] = relay.connection_field(Books)
@@ -68,9 +69,9 @@ class BookRealyQuery:
 @strawberry.type
 class AuthorRealyQuery:
     author: Authors = relay.node()
-    @strawberry.django.field()
-    def resolve_author(self,info,id:relay.NodeID[int])->List[Authors]:
-        return Author.objects.get(pk=id)
+    # @strawberry.django.field()
+    # def resolve_author(self,info,id:relay.NodeID[int])->List[Authors]:
+        # return Author.objects.get(pk=id)
 
 
     @strawberry.django.connection(relay.ListConnection[Authors])

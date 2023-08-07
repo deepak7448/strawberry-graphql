@@ -14,16 +14,27 @@ import strawberry_django_jwt.mutations as jwt_mutations
 # from gqlauth.user import relay as mutations
 # from gqlauth.user import arg_mutations as mutations
 from strawberry.file_uploads import Upload
+import typing
 
 @strawberry.type
 class Query(BookRealyQuery,AuthorRealyQuery):
     pass
 
 @strawberry.type
-class Mutation(BookMutation,RegisterUserMutation,LoginMutation):
+class Mutation(BookMutation,RegisterUserMutation,LoginMutation,ImageUpload,Bulkdata):
     token_auth = jwt_mutations.ObtainJSONWebToken.obtain
     verify_token = jwt_mutations.Verify.verify
     refresh_token = jwt_mutations.Refresh.refresh
+
+
+    @strawberry.mutation
+    def read_files(self, files: typing.List[Upload]) -> typing.List[str]:
+        print(files)
+        # contents = []
+        # for file in files:
+        #     content = file.read().decode("utf-8")
+        #     contents.append(content)
+        return files
 
     # @strawberry.mutation
     # def read_file(self, info,file: Upload) -> str:
@@ -39,7 +50,7 @@ schema = strawberry.Schema(
     mutation=Mutation,
     extensions=[
         DjangoOptimizerExtension,
-        JSONWebTokenMiddleware,
+        # JSONWebTokenMiddleware,
     ],
 )
 
@@ -49,3 +60,11 @@ schema = strawberry.Schema(
 
 
 # {"query":"mutation($cover: Upload!,$title:String){Add_Books(bookinput:{author: 2,cover: $cover,price:10,title:$title}){... on SuccessMessage { message }}}","variables": { "cover": null,"title":null}}
+# { "query": "mutation($files: [Upload!]!) { readFiles(files: $files) }", "variables": { "files": [null, null] } }
+
+
+# {"query":"mutation ($image: ImageInput) {Upload_Image(image: $image) {... on ImageType { id image createdAt }}}", "variables": { "image":{"image" :[null, null] }}}
+# { "query": "mutation($folder: FolderInput!) { readFolder(folder: $folder) }", "variables": {"folder": {"files": [null, null]}} }
+
+# {"file1": ["variables.img.0"], "file2": ["variables.img.1"]}
+# {"file1": ["variables.img.imag.0"], "file2": ["variables.img.image.1"]}

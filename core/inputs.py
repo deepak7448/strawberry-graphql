@@ -84,3 +84,10 @@ class UserInput:
 class UserLoginInput:
     username:auto
     password: auto
+
+
+@strawberry.django.input(Image)
+class ImageInput:
+    # id: auto
+    image: List[Upload]
+    # book:strawberry.ID

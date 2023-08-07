@@ -11,6 +11,7 @@ from strawberry.types import Info
 from strawberry_django_jwt.shortcuts import get_token,create_refresh_token
 from strawberry_django_jwt.refresh_token.models import RefreshToken
 from strawberry_django_jwt.decorators import login_required
+from graphql_relay import to_global_id, from_global_id
 from .utils import login
 # from strawberry_django_jwt.decorators import login_field
 
@@ -61,8 +62,11 @@ class BookMutation:
         try:
             errors=[]
             file=info.context.request.FILES
-            for i in file.values():
-                print(i)
+            if len(file)==0:
+                i=None
+            else:
+                for i in file.values():
+                    i=i
             if bookinput.time==strawberry.UNSET or time==None or time=="":
                 bookinput.time=None
             if bookinput.date==strawberry.UNSET or date==None or date=="":
@@ -86,12 +90,17 @@ class BookMutation:
     @login_required
     def update_book(self,info,id:strawberry.ID,bookinput:BookInput) -> Union[SuccessMessage,]:
         try:
+            id=from_global_id(id).id
             books=Book.objects.get(pk=id)
-            title=bookinput.title
-            if title==strawberry.UNSET:
-                title=books.title
-            else:
-                books.title=bookinput.title
+            if books.title==strawberry.UNSET:
+                books.title=None
+            elif bookinput.price==strawberry.UNSET:
+                bookinput.price=None
+            elif bookinput.description==strawberry.UNSET:
+                bookinput.description=None
+            elif bookinput.book_json==strawberry.UNSET:
+                bookinput.book_json=None
+            books.title=bookinput.title
             books.description=bookinput.description
             books.price=bookinput.price
             books.book_json=bookinput.book_json
@@ -138,8 +147,6 @@ class RegisterUserMutation:
                 userinput.profile.date_of_birth=None
             user=User.objects.create(username=userinput.username,email=userinput.email,
                                           first_name=userinput.first_name,last_name=userinput.last_name)
-            
-            
             user.set_password(userinput.password)
             user.save()
             ref=create_refresh_token(user)
@@ -187,3 +194,44 @@ class LoginMutation:
                     return LoginMessage(message="Login successfull",objects=user['user'],token=tok,refresh_token=ref)
         except Exception as e:
             raise GraphQLError(str(e))
+        
+
+@strawberry.type
+class ImageUpload:
+    @strawberry_django.mutation(name="Upload_Image",description="Upload image",handle_django_errors=True)
+    def uploadImgae(self,info,image:ImageInput)-> ImageType:
+        # print(img)
+        for i in image:
+            print(i)
+        # contents = []
+        # for file in img:
+        #     content = file.read().decode("utf-8")
+        #     contents.append(content)
+        return "img"
+        # try:
+        #     for i in img:
+        #         Image.objects.create(image=i.image)
+        #     return ImageType.objects.all()
+        # except Exception as e:
+        #     raise GraphQLError(str(e))
+
+
+@strawberry.type
+class BulkDataMessage:
+    message: str
+    # objects: List[Books]
+
+@strawberry.type
+class Bulkdata:
+    @strawberry_django.mutation(name="Bulk_Data",description="Bulk data",handle_django_errors=True)
+    def bulkdata(self,info,booksinput:List[BookInput])-> Union[BulkDataMessage,ErrorMessage]:
+        try:
+            errors=[]
+            bulk_data=[]
+            for data in booksinput:
+                print(data)
+            return BulkDataMessage(message="created")
+        except Exception as e:
+            errors.append({'message':str(e),"field":"error"})
+            return ErrorMessage(errors=errors,message="error")
+
